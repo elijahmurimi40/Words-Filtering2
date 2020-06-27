@@ -1,5 +1,9 @@
 package com.fortie40.words_filtering_2
 
+import android.graphics.Color
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.BackgroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +34,21 @@ class MainActivityAdapter(names: List<String>):
 
     override fun onBindViewHolder(holder: MainActivityViewHolder, position: Int) {
         val name = mFilteredList[position]
-        holder.bind(name)
+        if (string != null && string!!.isNotEmpty()) {
+            val startPos = name.toLowerCase(Locale.getDefault())
+                .indexOf(searchString!!.toLowerCase(Locale.getDefault()))
+            val endPos = startPos + searchString!!.length
+
+            if (startPos != -1) {
+                val spannable = SpannableString(name)
+                spannable.setSpan(BackgroundColorSpan(Color.YELLOW), startPos, endPos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                holder.bind(spannable)
+            } else {
+                holder.bind(name)
+            }
+        } else {
+            holder.bind(name)
+        }
     }
 
     override fun getFilter(): Filter {
@@ -68,6 +86,10 @@ class MainActivityAdapter(names: List<String>):
         private val name = nItemView.findViewById<TextView>(R.id.name)
 
         fun bind(nameA: String) {
+            name.text = nameA
+        }
+
+        fun bind(nameA: Spannable) {
             name.text = nameA
         }
     }
