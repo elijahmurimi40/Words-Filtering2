@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
@@ -24,7 +25,7 @@ class SearchActivityAdapter(names: List<String>):
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchActivityViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val itemView = layoutInflater.inflate(R.layout.name_layout, parent, false)
+        val itemView = layoutInflater.inflate(R.layout.search_layout, parent, false)
         return SearchActivityViewHolder(itemView)
     }
 
@@ -88,13 +89,17 @@ class SearchActivityAdapter(names: List<String>):
     }
 
     class SearchActivityViewHolder(nItemView: View): RecyclerView.ViewHolder(nItemView) {
-        private val name = nItemView.findViewById<TextView>(R.id.name)
+        private val name = nItemView.findViewById<TextView>(R.id.results)
+        private val history = nItemView.findViewById<ImageView>(R.id.history)
+        private val delete = nItemView.findViewById<ImageView>(R.id.delete)
 
         fun bind(nameA: String) {
             name.text = nameA
         }
 
         fun bind(nameA: Spannable) {
+            history.visibility = View.GONE
+            delete.visibility = View.GONE
             name.text = nameA
         }
     }
