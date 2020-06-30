@@ -8,11 +8,14 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.SearchView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.name_layout.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
-    private lateinit var adapter: MainActivityAdapter
+    private lateinit var mainAdapter: MainActivityAdapter
+    private lateinit var searchAdapter: SearchActivityAdapter
+    private lateinit var names: List<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +34,16 @@ class MainActivity : AppCompatActivity() {
         searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
         searchView.maxWidth = Integer.MAX_VALUE
         searchView.queryHint = getString(R.string.search_name)
+        searchView.setOnSearchClickListener {
+            Log.i("MainActivity", "I WAS CLICKED")
+            val recent = arrayListOf<String>("pol")
+            searchAdapter = SearchActivityAdapter(recent)
+            names_item.adapter = searchAdapter
+        }
+        searchView.setOnCloseListener {
+            names_item.adapter = mainAdapter
+            false
+        }
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchName(query)
@@ -38,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                searchName(newText)
+                //searchName(newText)
                 return false
             }
         })
@@ -56,7 +69,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getNames() {
-        val names: List<String> = arrayListOf(
+        names = arrayListOf(
             "Fortie40", "Java", "Kotlin", "C++", "PHP", "Javascript", "Objective-C", "Swift",
             "Groovy", "Haskell", "JQuery", "KRYPTON", "LotusScript", "Mortran", "NewLISP", "Orwell",
             "Hopscotch", "JScript", "AngelScript", "Bash", "Clojure", "C", "COBOL", "CSS",
@@ -64,15 +77,16 @@ class MainActivity : AppCompatActivity() {
             "Hollywood", "SMALL", "Lisp", "PureScript", "R++", "XQuery", "YAML", "ZOPL"
         )
 
-        adapter = MainActivityAdapter(names)
-        names_item.adapter = adapter
+        mainAdapter = MainActivityAdapter(names)
+        names_item.adapter = mainAdapter
     }
 
     private fun searchName(p0: String?) {
         search_progress.visibility = View.VISIBLE
-        adapter.string = p0
-        adapter.filter.filter(p0!!.toLowerCase(Locale.getDefault())) {
-            when(adapter.itemCount) {
+        searchAdapter.originalList = names
+        searchAdapter.string = p0
+        searchAdapter.filter.filter(p0!!.toLowerCase(Locale.getDefault())) {
+            when(searchAdapter.itemCount) {
                 0 -> {
                     no_results_found.visibility = View.VISIBLE
                     no_results_found.text = getString(R.string.no_results_found, p0)
@@ -81,9 +95,9 @@ class MainActivity : AppCompatActivity() {
                     no_results_found.visibility = View.GONE
                 }
             }
-            Log.i("MainActivityA", adapter.string!!)
+            Log.i("MainActivityA", searchAdapter.string!!)
             Log.i("MainActivity", p0)
-            if (adapter.string == "" || adapter.string == p0) {
+            if (searchAdapter.string == "" || searchAdapter.string == p0) {
                 Log.i("MainActivity", "done")
                 search_progress.visibility = View.GONE
             }

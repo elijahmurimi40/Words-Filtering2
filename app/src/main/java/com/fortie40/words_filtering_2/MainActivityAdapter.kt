@@ -1,26 +1,15 @@
 package com.fortie40.words_filtering_2
 
-import android.graphics.Color
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.BackgroundColorSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
 
 class MainActivityAdapter(names: List<String>):
-    RecyclerView.Adapter<MainActivityAdapter.MainActivityViewHolder>(), Filterable {
+    RecyclerView.Adapter<MainActivityAdapter.MainActivityViewHolder>() {
 
-    private var originalList: List<String> = names
-    private var mFilteredList: List<String> = names
-    var string: String? = null
-    private var searchString: String? = null
+    private var _names: List<String> = names
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainActivityViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -29,67 +18,18 @@ class MainActivityAdapter(names: List<String>):
     }
 
     override fun getItemCount(): Int {
-        return mFilteredList.size
+        return _names.size
     }
 
     override fun onBindViewHolder(holder: MainActivityViewHolder, position: Int) {
-        val name = mFilteredList[position]
-        if (string != null && string!!.isNotEmpty()) {
-            val startPos = name.toLowerCase(Locale.getDefault())
-                .indexOf(searchString!!.toLowerCase(Locale.getDefault()))
-            val endPos = startPos + searchString!!.length
-
-            if (startPos != -1) {
-                val spannable = SpannableString(name)
-                spannable.setSpan(BackgroundColorSpan(Color.YELLOW), startPos, endPos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                holder.bind(spannable)
-            } else {
-                holder.bind(name)
-            }
-        } else {
-            holder.bind(name)
-        }
-    }
-
-    override fun getFilter(): Filter {
-        return this.filter
-    }
-
-    private val filter = object : Filter() {
-        override fun performFiltering(constraint: CharSequence?): FilterResults {
-            val charString = constraint.toString()
-
-            mFilteredList = if (charString.isEmpty()) {
-                originalList
-            } else {
-                val filteredList = originalList
-                    .filter { it.toLowerCase(Locale.getDefault()).contains(charString) }
-                    .toMutableList()
-                Log.i("adapter", "********")
-                Log.i("adapter", "filtered")
-                searchString = charString
-                filteredList
-            }
-            val filterResults = FilterResults()
-            filterResults.values = mFilteredList
-            return filterResults
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            mFilteredList = results!!.values as List<String>
-            notifyDataSetChanged()
-        }
+        val name = _names[position]
+        holder.bind(name)
     }
 
     class MainActivityViewHolder(nItemView: View): RecyclerView.ViewHolder(nItemView) {
         private val name = nItemView.findViewById<TextView>(R.id.name)
 
         fun bind(nameA: String) {
-            name.text = nameA
-        }
-
-        fun bind(nameA: Spannable) {
             name.text = nameA
         }
     }
