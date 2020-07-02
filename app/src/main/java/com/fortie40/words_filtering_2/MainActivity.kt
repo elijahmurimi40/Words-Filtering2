@@ -34,7 +34,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         searchView = menu!!.findItem(R.id.app_bar_search).actionView as SearchView
-        searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
+        searchView.isSubmitButtonEnabled = true
+        searchView.imeOptions = EditorInfo.IME_ACTION_SEARCH or EditorInfo.IME_FLAG_NO_EXTRACT_UI
+        // searchView.imeOptions = EditorInfo.IME_ACTION_GO
+        // searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
         searchView.maxWidth = Integer.MAX_VALUE
         searchView.queryHint = getString(R.string.search_name)
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
