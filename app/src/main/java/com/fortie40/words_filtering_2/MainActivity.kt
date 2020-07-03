@@ -2,13 +2,16 @@ package com.fortie40.words_filtering_2
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.SearchView
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -33,7 +36,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        searchView = menu!!.findItem(R.id.app_bar_search).actionView as SearchView
+        // searchView = menu!!.findItem(R.id.app_bar_search).actionView as SearchView
+        val searchItem = menu!!.findItem(R.id.app_bar_search)
+        val view = searchItem.actionView
+        searchView = view as SearchView
+
+        val searchClose =
+            searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+        searchClose.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+
+        val searchGo =
+            searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_go_btn)
+        searchGo.setImageResource(R.drawable.ic_search_black_24dp)
+        searchGo.setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP)
+
         searchView.isSubmitButtonEnabled = true
         searchView.imeOptions = EditorInfo.IME_ACTION_SEARCH or EditorInfo.IME_FLAG_NO_EXTRACT_UI
         // searchView.imeOptions = EditorInfo.IME_ACTION_GO
