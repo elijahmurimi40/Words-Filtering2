@@ -15,12 +15,18 @@ import androidx.appcompat.widget.SearchView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), IClickListener {
     private lateinit var searchView: SearchView
     private lateinit var mainAdapter: MainActivityAdapter
     private lateinit var searchAdapter: SearchActivityAdapter
     private lateinit var names: List<String>
     private lateinit var sharedPref: SharedPreferences
+    private lateinit var recent: ArrayList<String>
+    private lateinit var reverseQueryKeys: List<String>
+
+    companion object {
+        private const val TAG = "MainActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,19 +64,20 @@ class MainActivity : AppCompatActivity() {
         searchView.queryHint = getString(R.string.search_name)
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                no_results_found.visibility = View.GONE
-                val recent = getRecentSearches()
-                searchAdapter = SearchActivityAdapter(recent)
+                hideNoResultsFound()
+                recent = getRecentSearches()
+                searchAdapter = SearchActivityAdapter(recent, this)
                 names_item.adapter = searchAdapter
+                Log.i(TAG, "$recent")
+                Log.i(TAG, "$reverseQueryKeys")
                 if (recent.isEmpty()) {
-                    no_results_found.visibility = View.VISIBLE
-                    no_results_found.text = getString(R.string.no_recent_search)
+                    showNoResultsFound(R.string.no_recent_search)
                 }
             }
         }
 
         searchView.setOnCloseListener {
-            no_results_found.visibility = View.GONE
+            hideNoResultsFound()
             names_item.adapter = mainAdapter
             false
         }
@@ -99,6 +106,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDeleteClick(position: Int) {
+        with(sharedPref.edit()) {
+            remove(reverseQueryKeys[position])
+            apply()
+        }
+
+        recent.removeAt(position)
+        searchAdapter.notifyDataSetChanged()
+
+        if (recent.isEmpty()) {
+            showNoResultsFound(R.string.no_recent_search)
+            with(sharedPref.edit()) {
+                clear()
+                apply()
+            }
+        }
+    }
+
     private fun getNames() {
         names = arrayListOf(
             "Fortie40", "Java", "Kotlin", "C++", "PHP", "Javascript", "Objective-C", "Swift",
@@ -120,11 +145,10 @@ class MainActivity : AppCompatActivity() {
         searchAdapter.filter.filter(p0.toLowerCase(Locale.getDefault())) {
             when(searchAdapter.itemCount) {
                 0 -> {
-                    no_results_found.visibility = View.VISIBLE
-                    no_results_found.text = getString(R.string.no_results_found, p0)
+                    showNoResultsFound(R.string.no_results_found, text = p0)
                 }
                 else -> {
-                    no_results_found.visibility = View.GONE
+                    hideNoResultsFound()
                 }
             }
             Log.i("MainActivityA", searchAdapter.string!!)
@@ -139,10 +163,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun saveToRecentSearch(name: String) {
         var position = sharedPref.getInt(POSITION, 0)
-        if (position == 0 || position == 5) {
+        if (position == 0 || position == 10) {
             position = 1
         } else {
             position++
+        }
+
+        if (reverseQueryKeys.size == 5) {
+            deleteFirstEntryOfInSharedPref()
         }
 
         val key = QUERY + "$position"
@@ -157,15 +185,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getRecentSearches(): List<String> {
+    private fun getRecentSearches(): ArrayList<String> {
         val queryList = arrayListOf<String>()
-        for (i in 1..5) {
+        val queryKeys = arrayListOf<String>()
+        for (i in 1..10) {
             val query = sharedPref.getString(QUERY + "$i", "")
             if (query!!.isNotEmpty()) {
                 queryList.add(query)
+                queryKeys.add(QUERY + "$i")
             }
         }
 
+        queryList.reverse()
+        queryKeys.reverse()
+        reverseQueryKeys = queryKeys
         return queryList
+    }
+    
+    private fun deleteFirstEntryOfInSharedPref() {
+        val firstItem: String? = reverseQueryKeys[4]
+        if (firstItem != null) {
+            Log.i(TAG, firstItem)
+            with(sharedPref.edit()) {
+                remove(firstItem)
+                apply()
+            }
+        }
+    }
+
+    private fun hideNoResultsFound() {
+        no_results_found.visibility = View.GONE
+    }
+
+    private fun showNoResultsFound(resource: Int, text: String = "") {
+        no_results_found.visibility = View.VISIBLE
+        if (text.isEmpty()) {
+            no_results_found.text = getString(resource)
+        } else {
+            no_results_found.text = getString(resource, text)
+        }
     }
 }

@@ -15,13 +15,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
-class SearchActivityAdapter(names: List<String>):
+class SearchActivityAdapter(names: List<String>, listener: IClickListener):
     RecyclerView.Adapter<SearchActivityAdapter.SearchActivityViewHolder>(), Filterable {
 
     var originalList: List<String> = names
     private var mFilteredList: List<String> = names
     var string: String? = null
     private var searchString: String? = null
+    private val clickHandler: IClickListener = listener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchActivityViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -35,6 +36,7 @@ class SearchActivityAdapter(names: List<String>):
 
     override fun onBindViewHolder(holder: SearchActivityViewHolder, position: Int) {
         val name = mFilteredList[position]
+        holder.iPosition = position
         if (string != null && string!!.isNotEmpty()) {
             val startPos = name.toLowerCase(Locale.getDefault())
                 .indexOf(searchString!!.toLowerCase(Locale.getDefault()))
@@ -88,10 +90,12 @@ class SearchActivityAdapter(names: List<String>):
         }
     }
 
-    class SearchActivityViewHolder(nItemView: View): RecyclerView.ViewHolder(nItemView) {
+    inner class SearchActivityViewHolder(nItemView: View): RecyclerView.ViewHolder(nItemView) {
         private val name = nItemView.findViewById<TextView>(R.id.results)
         private val history = nItemView.findViewById<ImageView>(R.id.history)
         private val delete = nItemView.findViewById<ImageView>(R.id.delete)
+
+        var iPosition = 0
 
         fun bind(nameA: String) {
             name.text = nameA
@@ -101,6 +105,12 @@ class SearchActivityAdapter(names: List<String>):
             history.visibility = View.GONE
             delete.visibility = View.GONE
             name.text = nameA
+        }
+
+        init {
+            delete.setOnClickListener {
+                clickHandler.onDeleteClick(iPosition)
+            }
         }
     }
 }
