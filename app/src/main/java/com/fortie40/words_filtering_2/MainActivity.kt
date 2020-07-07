@@ -15,6 +15,8 @@ import androidx.appcompat.widget.SearchView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.collections.ArrayList
+import com.fortie40.words_filtering_2.helperclasses.PreferenceHelper.set
+import com.fortie40.words_filtering_2.helperclasses.PreferenceHelper.get
 
 class MainActivity : AppCompatActivity(), IClickListener {
     private lateinit var searchView: SearchView
@@ -107,14 +109,17 @@ class MainActivity : AppCompatActivity(), IClickListener {
     override fun onDeleteClick(position: Int) {
         recent.removeAt(position)
         searchAdapter.notifyDataSetChanged()
-//
-//        if (recent.isEmpty()) {
-//            showNoResultsFound(R.string.no_recent_search)
-//            with(sharedPref.edit()) {
-//                clear()
-//                apply()
-//            }
-//        }
+
+        val query = arrayListToString(recent)
+        sharedPref[QUERY] = query
+
+        if (recent.isEmpty()) {
+            showNoResultsFound(R.string.no_recent_search)
+            with(sharedPref.edit()) {
+                clear()
+                apply()
+            }
+        }
     }
 
     private fun getNames() {
@@ -155,39 +160,36 @@ class MainActivity : AppCompatActivity(), IClickListener {
     }
 
     private fun saveToRecentSearch(name: String) {
-        val queries = sharedPref.getString(QUERY, "")?.split(",")
+        val queries = sharedPref[QUERY, ""]?.split(",")
 
-        val queryList = listToArrayList(queries!!, name = name)
+        val queryList = listToArrayList(queries, name = name)
         if (queryList.size == 6)
             queryList.removeAt(5)
 
         val query = arrayListToString(queryList)
 
-        with(sharedPref.edit()) {
-            putString(QUERY, query)
-            apply()
-        }
+        sharedPref[QUERY] = query
     }
 
     private fun getRecentSearches(): ArrayList<String> {
-        val queries = sharedPref.getString(QUERY, "")!!.split(",")
+        val queries = sharedPref[QUERY, ""]?.split(",")
         val queryList = listToArrayList(queries)
         Log.i(TAG,"$queryList")
 
         return queryList
     }
 
-    private fun listToArrayList(list: List<String>, name: String = ""): ArrayList<String> {
+    private fun listToArrayList(list: List<String>?, name: String = ""): ArrayList<String> {
         val nameToLower = name.toLowerCase(Locale.getDefault())
         val queryList = arrayListOf<String>()
         if (name.isEmpty()) {
-            list.forEach {
+            list?.forEach {
                 if (it.isNotEmpty())
                     queryList.add(it)
             }
         } else {
             queryList.add(nameToLower)
-            list.forEach {
+            list?.forEach {
                 if (it != nameToLower)
                     queryList.add(it)
             }
