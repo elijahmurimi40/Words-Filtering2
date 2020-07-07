@@ -17,6 +17,10 @@ Minimum Android Version 4.0 (Ice Cream Sandwich)
 <img 
 	src="demo/demo2.gif" 
 	alt="Demo" height="500px" hspace="20" />
+	
+<img 
+	src="demo/demo3.gif" 
+	alt="Demo" height="500px" hspace="20" />
 
 
 ## License
