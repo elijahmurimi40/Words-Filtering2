@@ -115,6 +115,10 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    override fun onResultsClick(position: Int) {
+        searchView.setQuery(recent[position], true)
+    }
+
     override fun onDeleteClick(position: Int) {
         recent.removeAt(position)
         searchAdapter.notifyDataSetChanged()

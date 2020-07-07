@@ -95,6 +95,7 @@ class SearchActivityAdapter(names: List<String>, listener: IClickListener):
     inner class SearchActivityViewHolder(nItemView: View): RecyclerView.ViewHolder(nItemView) {
         private val name = nItemView.findViewById<TextView>(R.id.results)
         private val history = nItemView.findViewById<ImageView>(R.id.history)
+        private val results = nItemView.findViewById<TextView>(R.id.results)
         private val delete = nItemView.findViewById<ImageView>(R.id.delete)
 
         var iPosition = 0
@@ -110,6 +111,10 @@ class SearchActivityAdapter(names: List<String>, listener: IClickListener):
         }
 
         init {
+            results.setOnClickListener {
+                clickHandler.onResultsClick(iPosition)
+            }
+
             delete.setOnClickListener {
                 clickHandler.onDeleteClick(iPosition)
             }
