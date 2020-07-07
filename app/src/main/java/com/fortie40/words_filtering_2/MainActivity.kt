@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), IClickListener {
     private lateinit var searchView: SearchView
@@ -22,7 +23,6 @@ class MainActivity : AppCompatActivity(), IClickListener {
     private lateinit var names: List<String>
     private lateinit var sharedPref: SharedPreferences
     private lateinit var recent: ArrayList<String>
-    private lateinit var reverseQueryKeys: List<String>
 
     companion object {
         private const val TAG = "MainActivity"
@@ -68,8 +68,6 @@ class MainActivity : AppCompatActivity(), IClickListener {
                 recent = getRecentSearches()
                 searchAdapter = SearchActivityAdapter(recent, this)
                 names_item.adapter = searchAdapter
-                Log.i(TAG, "$recent")
-                Log.i(TAG, "$reverseQueryKeys")
                 if (recent.isEmpty()) {
                     showNoResultsFound(R.string.no_recent_search)
                 }
@@ -107,21 +105,16 @@ class MainActivity : AppCompatActivity(), IClickListener {
     }
 
     override fun onDeleteClick(position: Int) {
-        with(sharedPref.edit()) {
-            remove(reverseQueryKeys[position])
-            apply()
-        }
-
         recent.removeAt(position)
         searchAdapter.notifyDataSetChanged()
-
-        if (recent.isEmpty()) {
-            showNoResultsFound(R.string.no_recent_search)
-            with(sharedPref.edit()) {
-                clear()
-                apply()
-            }
-        }
+//
+//        if (recent.isEmpty()) {
+//            showNoResultsFound(R.string.no_recent_search)
+//            with(sharedPref.edit()) {
+//                clear()
+//                apply()
+//            }
+//        }
     }
 
     private fun getNames() {
@@ -162,55 +155,52 @@ class MainActivity : AppCompatActivity(), IClickListener {
     }
 
     private fun saveToRecentSearch(name: String) {
-        var position = sharedPref.getInt(POSITION, 0)
-        if (position == 0 || position == 10) {
-            position = 1
-        } else {
-            position++
-        }
+        val queries = sharedPref.getString(QUERY, "")?.split(",")
 
-        if (reverseQueryKeys.size == 5) {
-            deleteFirstEntryOfInSharedPref()
-        }
+        val queryList = listToArrayList(queries!!, name = name)
+        if (queryList.size == 6)
+            queryList.removeAt(5)
 
-        val key = QUERY + "$position"
-        with(sharedPref.edit()) {
-            putString(key, name)
-            apply()
-        }
+        val query = arrayListToString(queryList)
 
         with(sharedPref.edit()) {
-            putInt(POSITION, position)
+            putString(QUERY, query)
             apply()
         }
     }
 
     private fun getRecentSearches(): ArrayList<String> {
+        val queries = sharedPref.getString(QUERY, "")!!.split(",")
+        val queryList = listToArrayList(queries)
+        Log.i(TAG,"$queryList")
+
+        return queryList
+    }
+
+    private fun listToArrayList(list: List<String>, name: String = ""): ArrayList<String> {
+        val nameToLower = name.toLowerCase(Locale.getDefault())
         val queryList = arrayListOf<String>()
-        val queryKeys = arrayListOf<String>()
-        for (i in 1..10) {
-            val query = sharedPref.getString(QUERY + "$i", "")
-            if (query!!.isNotEmpty()) {
-                queryList.add(query)
-                queryKeys.add(QUERY + "$i")
+        if (name.isEmpty()) {
+            list.forEach {
+                if (it.isNotEmpty())
+                    queryList.add(it)
+            }
+        } else {
+            queryList.add(nameToLower)
+            list.forEach {
+                if (it != nameToLower)
+                    queryList.add(it)
             }
         }
 
-        queryList.reverse()
-        queryKeys.reverse()
-        reverseQueryKeys = queryKeys
         return queryList
     }
-    
-    private fun deleteFirstEntryOfInSharedPref() {
-        val firstItem: String? = reverseQueryKeys[4]
-        if (firstItem != null) {
-            Log.i(TAG, firstItem)
-            with(sharedPref.edit()) {
-                remove(firstItem)
-                apply()
-            }
-        }
+
+    private fun arrayListToString(list: ArrayList<String>): String {
+        return list.toString()
+            .replace("[", "")
+            .replace("]", "")
+            .replace(" ", "")
     }
 
     private fun hideNoResultsFound() {
