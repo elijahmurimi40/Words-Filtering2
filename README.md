@@ -1,5 +1,22 @@
+<p align="center"><img 
+	src="demo/logo.png" 
+	alt="Logo" width="40px" height="40px" /></p>
+  
 # Words-Filtering2
 A bit of customization for [Words-Filtering-SearchView-Kotlin](https://github.com/fortie40/Words-Filtering-SearchView-Kotlin) and [Words-Filtering3 The Final Episode:laughing::stuck_out_tongue_winking_eye:](https://github.com/fortie40/Words-Filtering3) 
+
+### Demos
+<img 
+	src="demo/demo1.gif" 
+	alt="Demo" height="500px" hspace="20" />
+  
+  
+<img 
+	src="demo/demo2.gif" 
+	alt="Demo" height="500px" hspace="20" />
+<img 
+	src="demo/demo3.gif" 
+	alt="Demo" height="500px" hspace="20" />
 
 ## License
 
