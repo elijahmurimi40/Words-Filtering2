@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import com.fortie40.words_filtering_2.adapters.MainActivityAdapter
 import com.fortie40.words_filtering_2.adapters.SearchActivityAdapter
+import com.fortie40.words_filtering_2.helperclasses.HelperFunctions
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -118,7 +119,7 @@ class MainActivity : AppCompatActivity(),
         recent.removeAt(position)
         searchAdapter.notifyDataSetChanged()
 
-        val query = arrayListToString(recent)
+        val query = HelperFunctions.arrayListToString(recent)
         sharedPref[QUERY] = query
 
         if (recent.isEmpty()) {
@@ -171,47 +172,21 @@ class MainActivity : AppCompatActivity(),
     private fun saveToRecentSearch(name: String) {
         val queries = sharedPref[QUERY, ""]?.split(",")
 
-        val queryList = listToArrayList(queries, name = name)
+        val queryList = HelperFunctions.listToArrayList(queries, name = name)
         if (queryList.size == 6)
             queryList.removeAt(5)
 
-        val query = arrayListToString(queryList)
+        val query = HelperFunctions.arrayListToString(queryList)
 
         sharedPref[QUERY] = query
     }
 
     private fun getRecentSearches(): ArrayList<String> {
         val queries = sharedPref[QUERY, ""]?.split(",")
-        val queryList = listToArrayList(queries)
+        val queryList = HelperFunctions.listToArrayList(queries)
         Log.i(TAG,"$queryList")
 
         return queryList
-    }
-
-    private fun listToArrayList(list: List<String>?, name: String = ""): ArrayList<String> {
-        val nameToLower = name.toLowerCase(Locale.getDefault())
-        val queryList = arrayListOf<String>()
-        if (name.isEmpty()) {
-            list?.forEach {
-                if (it.isNotEmpty())
-                    queryList.add(it)
-            }
-        } else {
-            queryList.add(nameToLower)
-            list?.forEach {
-                if (it != nameToLower)
-                    queryList.add(it)
-            }
-        }
-
-        return queryList
-    }
-
-    private fun arrayListToString(list: ArrayList<String>): String {
-        return list.toString()
-            .replace("[", "")
-            .replace("]", "")
-            .replace(" ", "")
     }
 
     private fun hideNoResultsFound() {
