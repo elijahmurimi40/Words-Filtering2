@@ -17,8 +17,10 @@ import java.util.*
 import kotlin.collections.ArrayList
 import com.fortie40.words_filtering_2.helperclasses.PreferenceHelper.set
 import com.fortie40.words_filtering_2.helperclasses.PreferenceHelper.get
+import com.fortie40.words_filtering_2.interfaces.IClickListener
 
-class MainActivity : AppCompatActivity(), IClickListener {
+class MainActivity : AppCompatActivity(),
+    IClickListener {
     private lateinit var searchView: SearchView
     private lateinit var mainAdapter: MainActivityAdapter
     private lateinit var searchAdapter: SearchActivityAdapter
