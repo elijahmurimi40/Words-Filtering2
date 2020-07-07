@@ -1,10 +1,11 @@
-package com.fortie40.words_filtering_2
+package com.fortie40.words_filtering_2.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.fortie40.words_filtering_2.R
 
 class MainActivityAdapter(names: List<String>):
     RecyclerView.Adapter<MainActivityAdapter.MainActivityViewHolder>() {
@@ -14,7 +15,9 @@ class MainActivityAdapter(names: List<String>):
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainActivityViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val itemView = layoutInflater.inflate(R.layout.name_layout, parent, false)
-        return MainActivityViewHolder(itemView)
+        return MainActivityViewHolder(
+            itemView
+        )
     }
 
     override fun getItemCount(): Int {

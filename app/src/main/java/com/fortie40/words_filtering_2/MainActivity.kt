@@ -12,6 +12,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import com.fortie40.words_filtering_2.adapters.MainActivityAdapter
+import com.fortie40.words_filtering_2.adapters.SearchActivityAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -70,7 +72,11 @@ class MainActivity : AppCompatActivity(),
             if (hasFocus) {
                 hideNoResultsFound()
                 recent = getRecentSearches()
-                searchAdapter = SearchActivityAdapter(recent, this)
+                searchAdapter =
+                    SearchActivityAdapter(
+                        recent,
+                        this
+                    )
                 names_item.adapter = searchAdapter
                 if (recent.isEmpty()) {
                     showNoResultsFound(R.string.no_recent_search)
@@ -133,7 +139,8 @@ class MainActivity : AppCompatActivity(),
             "Hollywood", "SMALL", "Lisp", "PureScript", "R++", "XQuery", "YAML", "ZOPL"
         )
 
-        mainAdapter = MainActivityAdapter(names)
+        mainAdapter =
+            MainActivityAdapter(names)
         names_item.adapter = mainAdapter
     }
 

@@ -1,4 +1,4 @@
-package com.fortie40.words_filtering_2
+package com.fortie40.words_filtering_2.adapters
 
 import android.graphics.Color
 import android.text.Spannable
@@ -13,6 +13,7 @@ import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.fortie40.words_filtering_2.R
 import com.fortie40.words_filtering_2.interfaces.IClickListener
 import java.util.*
 
