@@ -150,7 +150,8 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun searchName(p0: String?) {
-        search_progress.visibility = View.VISIBLE
+        progressBar.visibility = View.VISIBLE
+        names_item.visibility = View.GONE
         saveToRecentSearch(p0!!)
         searchAdapter.originalList = names
         searchAdapter.string = p0
@@ -167,7 +168,8 @@ class MainActivity : AppCompatActivity(),
             Log.i("MainActivity", p0)
             if (searchAdapter.string == "" || searchAdapter.string == p0) {
                 Log.i("MainActivity", "done")
-                search_progress.visibility = View.GONE
+                progressBar.visibility = View.GONE
+                names_item.visibility = View.VISIBLE
                 searchView.clearFocus()
             }
         }

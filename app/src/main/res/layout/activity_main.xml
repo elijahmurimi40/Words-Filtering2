@@ -7,12 +7,12 @@
     tools:context=".MainActivity">
 
     <ProgressBar
-        android:id="@+id/search_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

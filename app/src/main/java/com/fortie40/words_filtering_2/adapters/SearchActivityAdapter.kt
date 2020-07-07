@@ -15,6 +15,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.fortie40.words_filtering_2.R
 import com.fortie40.words_filtering_2.interfaces.IClickListener
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
 class SearchActivityAdapter(names: List<String>, listener: IClickListener):
@@ -66,12 +68,13 @@ class SearchActivityAdapter(names: List<String>, listener: IClickListener):
     }
 
     private val filter = object : Filter() {
-        override fun performFiltering(constraint: CharSequence?): FilterResults {
+        override fun performFiltering(constraint: CharSequence?): FilterResults = runBlocking {
             val charString = constraint.toString()
 
             mFilteredList = if (charString.isEmpty()) {
                 originalList
             } else {
+                delay(2000)
                 val filteredList = originalList
                     .filter { it.toLowerCase(Locale.getDefault()).contains(charString) }
                     .toMutableList()
@@ -82,7 +85,7 @@ class SearchActivityAdapter(names: List<String>, listener: IClickListener):
             }
             val filterResults = FilterResults()
             filterResults.values = mFilteredList
-            return filterResults
+            return@runBlocking filterResults
         }
 
         @Suppress("UNCHECKED_CAST")
